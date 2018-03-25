@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">BluetoothTelnetServer</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="app_name">Daemon</string>
+  	<string name="sample_device_admin">SAMPLE DEVICE ADMIN</string>
+	<string name="sample_device_admin_description">DESCRIPTION</string>
 </resources>

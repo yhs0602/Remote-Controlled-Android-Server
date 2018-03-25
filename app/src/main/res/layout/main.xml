@@ -1,11 +1,92 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="match_parent"
+	android:gravity="center"
+	android:orientation="vertical">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+	<EditText
+		android:layout_height="wrap_content"
+		android:inputType="textMultiLine"
+		android:ems="10"
+		android:layout_width="fill_parent"
+		android:id="@+id/devicesText"/>
+
+	<ScrollView
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content">
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:orientation="vertical">
+
+			<Switch
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/SwitchListen"
+				android:text="Listen on / off"/>
+
+			<Switch
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/SwitchListenOnBoot"
+				android:text="Listen on boot"/>
+
+			<Switch
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/SwitchListenOnBTEnabled"
+				android:text="Bluetooth 켜질 시 자동 실행"/>
+
+			<Switch
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/SwitchBSneak"
+				android:text="Sneak"/>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:text="명령 직접 추가"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="wrap_content"/>
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="horizontal">
+
+				<EditText
+					android:layout_height="wrap_content"
+					android:ems="10"
+					android:layout_width="wrap_content"
+					android:id="@+id/EditSelectedFile"/>
+
+				<Button
+					android:layout_height="wrap_content"
+					android:text="파일 불러오기"
+					android:layout_width="wrap_content"
+					android:id="@+id/BtnSelFile"/>
+
+			</LinearLayout>
+
+			<EditText
+				android:layout_height="wrap_content"
+				android:inputType="textMultiLine"
+				android:ems="10"
+				android:layout_width="fill_parent"
+				android:id="@+id/EditCmd"/>
+
+			<Button
+				android:layout_height="wrap_content"
+				android:text="전송"
+				android:layout_width="wrap_content"
+				android:id="@+id/BtnSubmit"/>
+
+		</LinearLayout>
+
+	</ScrollView>
 
 </LinearLayout>
+
