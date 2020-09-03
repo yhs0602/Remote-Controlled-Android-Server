@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.madgag.spongycastle:bcpkix-jdk15on:1.58.0.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.madgag.spongycastle/bcpkix-jdk15on/1.58.0.0/a0502b8f7dcd70612c0f5be77f3cd76e4665d268/bcpkix-jdk15on-1.58.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.madgag.spongycastle/bcpkix-jdk15on/1.58.0.0/cc994d9cecdba4f1c85fc6310f38b3fc3daab7ba/bcpkix-jdk15on-1.58.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.madgag.spongycastle/bcpkix-jdk15on/1.58.0.0/ebb5ac05b1e4948a770d266df2b64b728714c4d2/bcpkix-jdk15on-1.58.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
