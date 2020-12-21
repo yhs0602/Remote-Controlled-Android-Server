@@ -156,15 +156,27 @@ public class BluetoothConnector {
 
         private BluetoothSocket fallbackSocket;
 
+		private String TAG="BTOPP FALLBACK";
+
         public FallbackBluetoothSocket(BluetoothSocket tmp) throws FallbackException {
             super(tmp);
             try
             {
 				Class<?> clazz = tmp.getRemoteDevice().getClass();
 				Class<?>[] paramTypes = new Class<?>[] {Integer.TYPE};
-				Method m = clazz.getMethod("createRfcommSocket", paramTypes);
-				Object[] params = new Object[] {Integer.valueOf(4)};
-				fallbackSocket = (BluetoothSocket) m.invoke(tmp.getRemoteDevice(), params);
+				Method m = clazz.getMethod("createInsecureRfcommSocket", paramTypes);
+				//for(int i=0;i<16;++i){
+					try{
+					Object[] params = new Object[] {Integer.valueOf(3)};//Reverse engineered some apps
+					fallbackSocket = (BluetoothSocket) m.invoke(tmp.getRemoteDevice(), params);
+					//Log.v(TAG,"OK!!!! i="+i);
+					//return;
+					}catch (Exception e)
+					{
+						
+						throw new FallbackException(e);
+					}
+				//}
             }
             catch (Exception e)
             {

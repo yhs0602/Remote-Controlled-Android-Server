@@ -6,8 +6,13 @@ android {
 
     defaultConfig {
         applicationId "com.kyunggi.worker2"
+<<<<<<< Updated upstream
         minSdkVersion 24
         targetSdkVersion 30
+=======
+        minSdkVersion 17
+        targetSdkVersion 21
+>>>>>>> Stashed changes
         versionCode 1
         versionName "1.0"
     }

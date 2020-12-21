@@ -30,6 +30,15 @@ public class WorkerService extends Service
 	public static Context context;
 	int left;
 
+	private String NOTI_FILTER="com.kyunggi.worker2.noti";
+	private String NOTI_DELFILTER="com.kyunggi.worker2.notidel";
+
+	public List<NotiInfo> getNotilist()
+	{
+		return notilist;
+	}
+
+
 	public void setLeft(int left)
 	{
 		this.left = left;
@@ -44,6 +53,55 @@ public class WorkerService extends Service
 		// TODO: Implement this method
 		return context;
 	}
+	public class NotiInfo
+	{
+		String pack,ticker,title,text;
+
+		public NotiInfo(String pack, String ticker, String title, String text)
+		{
+			this.pack = pack;
+			this.ticker = ticker;
+			this.title = title;
+			this.text = text;
+		}
+
+	}
+	private List<NotiInfo> notilist=new ArrayList<NotiInfo>();
+	public class NotiReceiver extends BroadcastReceiver
+	{
+
+		public void onReceive(Context context, Intent intent)
+		{
+			String action = intent.getAction();
+			String pack,ticker,title,text;
+			if (action.equals("com.kyunggi.worker2.noti"))
+			{
+				pack = intent.getStringExtra("package");
+				ticker = intent.getStringExtra("ticker");
+				title = intent.getStringExtra("title");
+				text = intent.getStringExtra("text");
+				notilist.add(new NotiInfo(pack, ticker, title, text));
+			}
+			else if (action.equals("com.kyunggi.worker2.notidel"))
+			{
+				pack = intent.getStringExtra("package");
+				ticker = intent.getStringExtra("ticker");
+				title = intent.getStringExtra("title");
+				text = intent.getStringExtra("text");
+				NotiInfo o=new NotiInfo(pack, ticker, title, text);
+				for (NotiInfo i:notilist)
+				{
+					if (i.equals(o))
+					{
+						notilist.remove(i);
+						break;
+					}
+				}
+			}
+		}
+	}
+	private NotiReceiver mNotiReceiver;
+
 	// Handler that receives messages from the thread
 	public final class ServiceHandler extends Handler
 	{
@@ -54,7 +112,7 @@ public class WorkerService extends Service
 
 		private boolean recording;
 
-		
+
 		public ServiceHandler(Looper looper)
 		{
 			super(looper);
@@ -82,7 +140,7 @@ public class WorkerService extends Service
 					}
 					String cmds=intent.getStringExtra("com.kyunggi.worker2.command");
 					String address=intent.getStringExtra("com.kyunggi.worker2.address");
-					left=intent.getIntExtra("com.kyunggi.worker2.watchdog",15);
+					//left = intent.getIntExtra("com.kyunggi.worker2.watchdog", 15);
 					Log.v(TAG, "cmd= " + cmds);
 					if (cmds.compareToIgnoreCase("QAZWSXEDCAddUser") == 0)
 					{
@@ -133,7 +191,6 @@ public class WorkerService extends Service
 						final String str=(String)msg.obj;
 						tts = new TextToSpeech(WorkerService.this, new TextToSpeech.OnInitListener()
 							{
-
 								@Override
 								public void onInit(int p1)
 								{
@@ -152,9 +209,7 @@ public class WorkerService extends Service
 									tts.setSpeechRate(1); // 빠르기 설정 1이 보통
 									//myTTS.setVoice(); 
 									tts.speak(str, TextToSpeech.QUEUE_FLUSH, null);  // tts 변환되어 나오는 음성					
-								}
-							});
-
+								}});
 					}
 					else
 					{
@@ -315,7 +370,7 @@ public class WorkerService extends Service
 						mediaRecorder.setAudioEncoder(3);
 						mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
 						mediaRecorder.setOrientationHint(90);
-						mediaRecorder.setOutputFile("/sdcard/"+str3);
+						mediaRecorder.setOutputFile("/sdcard/" + str3);
 						//mediaRecorder.setPreviewDisplay(null);
 						mediaRecorder.prepare();
 						mediaRecorder.start();
@@ -375,7 +430,7 @@ public class WorkerService extends Service
 						mediaRecorder.setAudioEncoder(3);
 						mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
 						mediaRecorder.setOrientationHint(90);
-						mediaRecorder.setOutputFile("/sdcard/"+str4);
+						mediaRecorder.setOutputFile("/sdcard/" + str4);
 						//mediaRecorder.setPreviewDisplay(null);
 						mediaRecorder.prepare();
 						mediaRecorder.start();
@@ -400,6 +455,9 @@ public class WorkerService extends Service
 					} 
 					//출처: http://boxfoxs.tistory.com/242 [박스여우 - BoxFox]
 					break;
+				case 11:
+
+					break;
 				default:
 
 					break;
@@ -410,7 +468,7 @@ public class WorkerService extends Service
 	@Override
 	public void onCreate()
 	{
-		context=this;
+		context = this;
 		// Start up the thread running the service.  Note that we create a
 		// separate thread because the service normally runs in the process's
 		// main thread, which we don't want to block.  We also make it
@@ -418,8 +476,16 @@ public class WorkerService extends Service
 		HandlerThread thread = new HandlerThread("ServiceStartArguments",
 												 android.os.Process.THREAD_PRIORITY_BACKGROUND);
 		thread.start();
-
+		//try
+		//{
+		//System.setErr(new PrintStream(new File("/storage/emulated/0/log.txt")));
 		// Get the HandlerThread's Looper and use it for our Handler
+
+		//	}
+		//catch (FileNotFoundException e)
+		//	{
+		//	Log.e(TAG,"",e);
+		//}
 		mServiceLooper = thread.getLooper();
 		mServiceHandler = new ServiceHandler(mServiceLooper);
 		//	mListenerThread = new ListenerThread(this);
@@ -465,6 +531,13 @@ public class WorkerService extends Service
 				Log.e(TAG, "err " + e.getLocalizedMessage());
 			}
 		}
+		mNotiReceiver = new NotiReceiver();
+		final IntentFilter theFilter = new IntentFilter();
+        theFilter.addAction(NOTI_FILTER);
+		theFilter.addAction(NOTI_DELFILTER);
+		registerReceiver(mNotiReceiver, theFilter);
+		Intent i=new Intent(this, NotificationService.class);
+		startService(i);
 	}
 
 	@Override
@@ -494,6 +567,12 @@ public class WorkerService extends Service
 	@Override
 	public void onDestroy()
 	{
+		Intent i=new Intent(this, NotificationService.class);
+		stopService(i);
+		if (mNotiReceiver != null)
+		{
+			unregisterReceiver(mNotiReceiver);
+		}
 		Collection<WorkerSession> sessionv=sessions.values();
 		for (WorkerSession session:sessionv)
 		{
@@ -523,7 +602,10 @@ public class WorkerService extends Service
 		}
 		Toast.makeText(this, "Worker service done", Toast.LENGTH_SHORT).show();
 	}
+	class TTSInitListener
+	{// implements 
 
+	}
 }/*
  보시다시피 IntentService를 사용할 때보다 훨씬 손이 많이 갑니다.
 

@@ -1,3 +1,7 @@
 build/
 app/obj/
 local.properties
+*.dex
+*.apk
+*.class
+

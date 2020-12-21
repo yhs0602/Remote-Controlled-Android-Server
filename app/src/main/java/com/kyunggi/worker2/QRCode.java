@@ -1,7 +1,18 @@
 package com.kyunggi.worker2;
 
+<<<<<<< Updated upstream
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+=======
+import android.graphics.*;
+import android.util.*;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.*;
+import com.google.zxing.common.*;
+import com.google.zxing.qrcode.*;
+import java.io.*;
+import java.util.*;
+>>>>>>> Stashed changes
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -24,7 +35,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-public class QRCode {
+public class QRCode
+{
+
+	private static String TAG="BTOPP QR";
 
     /**
      *
@@ -91,10 +105,25 @@ public class QRCode {
 		Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
 		return qrCodeResult.getText();
 	}*/
+<<<<<<< Updated upstream
     // Interesting method
     public static String decodeQRImage(String path) {
         Bitmap bMap = BitmapFactory.decodeFile(path);
         String decoded = null;
+=======
+	// Interesting method
+	public static String decodeQRImage(String path) {
+		path=path.trim();
+		path=path.replaceAll("\r","");
+		Log.v(TAG,path);
+		File file=new File(path);
+		if(!file.isFile())
+		{
+			throw new RuntimeException(path+"not file");
+		}
+		Bitmap bMap = BitmapFactory.decodeFile(path);
+		String decoded = null;
+>>>>>>> Stashed changes
 
         int[] intArray = new int[bMap.getWidth() * bMap.getHeight()];
         bMap.getPixels(intArray, 0, bMap.getWidth(), 0, 0, bMap.getWidth(),

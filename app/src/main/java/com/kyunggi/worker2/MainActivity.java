@@ -5,10 +5,12 @@ import android.app.admin.*;
 import android.bluetooth.*;
 import android.content.*;
 import android.os.*;
+import android.provider.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
+import com.kyunggi.worker2.*;
 import java.io.*;
 import java.nio.*;
 import java.util.*;
@@ -27,6 +29,8 @@ public class MainActivity extends Activity implements CompoundButton.OnCheckedCh
 	private boolean bSneak=false;
 	SharedPreferences setting;
 	SharedPreferences.Editor editor;
+
+	private String TAG;
 
 	//출처: http://itmir.tistory.com/393 [미르의 IT 정복기]
 	@Override
@@ -105,19 +109,86 @@ public class MainActivity extends Activity implements CompoundButton.OnCheckedCh
 		}
 	}
 
+	//check notification access setting is enabled or not
+/*	public static boolean checkNotificationEnabled() {
+		try{
+			if(Settings.Secure.getString(MainActivity.getContentResolver(),
+										 "enabled_notification_listeners").contains(App.getContext().getPackageName())) 
+			{
+				return true;
+			} else {
+				return false;
+			}
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	*/
 	private void stopListenerService()
 	{
 		// TODO: Implement this method
 		Intent i=new Intent(this, BluetoothOPPService.class);
+		stopService(i);
+		i=new Intent(this, CompatibleService.class);
 		stopService(i);
 	}
 
 	private void startListenerService()
 	{
 		// TODO: Implement this method
-		Intent intent=new Intent(this, BluetoothOPPService.class);
+		Class<?> classtoIntent=BluetoothOPPService.class;
+		if(isHooked())
+		{
+			classtoIntent=CompatibleService.class;
+		}
+		Intent intent=new Intent(this,classtoIntent);
 		intent.putExtra("com.kyunggi.bSneak", bSneak);
 		startService(intent);
+	}
+
+	private boolean isHooked()
+	{
+		// TODO: Implement this method
+	/*	BluetoothManager bm=(BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+		Class clazz=bm.getClass();
+		try
+		{
+			Method method=clazz.getDeclaredMethod("isWhitelisted", String.class);
+			method.setAccessible(true);
+			try
+			{
+				boolean b=method.invoke(bm, "hello");
+				return b;
+			}
+			catch (IllegalAccessException e)
+			{
+				Log.e(TAG,"",e);
+			}
+			catch (IllegalArgumentException e)
+			{
+				Log.e(TAG,"",e);
+			}
+			catch (InvocationTargetException e)
+			{
+				Log.e(TAG,"",e);
+			}
+		}
+		catch (NoSuchMethodException e)
+		{
+			Log.e(TAG,"",e);
+		}
+		catch (SecurityException e)
+		{
+			Log.e(TAG,"",e);
+		}*/
+		File file=new File(Environment.getExternalStorageDirectory(),".hook");
+		if(file.isFile())
+		{
+			return true;
+		}
+		return false;
 	}
 
 
@@ -200,6 +271,10 @@ public class MainActivity extends Activity implements CompoundButton.OnCheckedCh
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
 		{
             if ("com.kyunggi.worker2.BluetoothOPPService".equals(service.service.getClassName()))
+			{
+                return true;
+            }
+			if ("com.kyunggi.worker2.CompatibleService".equals(service.service.getClassName()))
 			{
                 return true;
             }

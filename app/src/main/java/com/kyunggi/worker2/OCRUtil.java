@@ -5,6 +5,7 @@ import android.graphics.*;
 import android.util.*;
 import com.googlecode.tesseract.android.*;
 import java.io.*;
+import java.util.*;
 
 public class OCRUtil
 {
@@ -63,6 +64,9 @@ public class OCRUtil
 
 	public String processImage(String path)
 	{
+		Log.d(TAG,path);
+		Log.d(TAG,Arrays.toString(path.getBytes()));
+		
 		File file=new File(path);
 		if(!file.exists())
 		{

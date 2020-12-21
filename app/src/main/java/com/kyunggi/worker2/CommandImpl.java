@@ -27,6 +27,29 @@ public class CommandImpl
 		typeConverter=s.typeConverter;
 	}
 	
+	public void DoGetNoti(String [] args)
+	{
+		StringBuilder sb=new StringBuilder();
+		List<WorkerService.NotiInfo> info=session.getNotiInfos();
+		for(WorkerService.NotiInfo i:info)
+		{
+			sb.append("package:"+i.pack+"\n");
+			sb.append("title:"+i.title+"\n");
+			sb.append("ticker:"+i.ticker+"\n");
+			sb.append("text:"+i.text+"\n\n");
+			
+		}
+		try
+		{
+			session.sender.Send(typeConverter.GetBatchInfo("", TypeConverter.FILETYPE.VNT, sb.toString()));
+		}
+		catch (IOException e)
+		{
+			
+		}
+	}
+	
+	
 	public void DoQRStr(String[] args)
 	{
 		String s=Utility.getStringFromQRCode(FinishArgs(args));
@@ -750,7 +773,7 @@ public class CommandImpl
 		String [] tmp=new String[words.length - 1];
 		System.arraycopy(words, 1, tmp, 0, words.length - 1);
 		String s= TextUtils.join(" ", tmp);
-		s = s.substring(0, s.length() - 1);
+		//s = s.substring(0, s.length() - 1);
 
 		Log.d(TAG,"FinishArgs: "+s);
 

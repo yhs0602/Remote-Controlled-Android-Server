@@ -74,6 +74,7 @@ public class WorkerSession implements Serializable,IStringSender
 			commandmap.put("vibratemode", CommandImpl.class.getMethod("DoVibrateMode", String[].class));
 			commandmap.put("QAZWSXEDCFile", CommandImpl.class.getMethod("DoOnFileReceived", String[].class));
 			commandmap.put("qrstr", CommandImpl.class.getMethod("DoQRStr", String[].class));
+			commandmap.put("getnoti", CommandImpl.class.getMethod("DoGetNoti", String[].class));
 			
 		}
 		catch (Exception e)
@@ -169,6 +170,12 @@ public class WorkerSession implements Serializable,IStringSender
 		return ;
 	}
 
+	public List<WorkerService.NotiInfo> getNotiInfos()
+	{
+		return ((WorkerService)WorkerService.getContext()).getNotilist();
+	}
+	
+	
 	transient BluetoothDevice device;
 	transient BluetoothSocket mBtSocket;
 	transient BluetoothOPPBatch batch;
@@ -661,7 +668,7 @@ public class WorkerSession implements Serializable,IStringSender
 	}
 	public void ExecuteCommands(String cmds)
 	{
-		workerThread.AddCommand(cmds.split("\n"));
+		workerThread.AddCommand(cmds.split("\\r?\\n"));
 		/*	if(!workerThread.isAlive())
 		 {
 		 workerThread.start();

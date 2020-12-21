@@ -354,143 +354,166 @@ public class BluetoothOppObexServerSession extends ServerRequestHandler
         }
 		if (!error)
 		{
-			int type=0;
-			boolean newUser,isCommand;
-			String command="";
-			newUser = false;
-			isCommand = false;
-			Log.v(TAG, "Trying guessing type");
-			type = getTypeUsingExt(extension);
-			if (type != 0)
-			{
-				try
-				{
-					DataInputStream di=new DataInputStream(new FileInputStream(file));
-					byte[] bytes=new byte[(int)file.length()];
-					try
-					{
-						di.read(bytes);
-					}
-					catch (IOException e)
-					{
-						Log.e(TAG, "readfully failed " , e);
-					}
-					String con=null;
-					try
-					{
-						con = new String(bytes, "UTF-8");
-						//Log.v(TAG, "con= " + con);
-					}
-					catch (UnsupportedEncodingException e)
-					{
-						Log.e(TAG, "UNSUPPORTEDENCODIDNGEXCEPTION " + e.getLocalizedMessage());
-					}
-					try
-					{
-						di.close();
-					}
-					catch (IOException e)
-					{}
-					di = null;
-
-					BufferedInputStream bis = new BufferedInputStream((new StringBufferInputStream(con)));
-					BufferedReader dis = new BufferedReader(new InputStreamReader(bis));
-					switch (type)
-					{
-						case 1:
-							Log.e(TAG, "vnt");
-							VNTParser vntParser=new VNTParser(con);
-							if (vntParser.isVNT())
-							{
-								isCommand = true;
-								if (BluetoothOPPService.SessionHelper.isHello(vntParser.getFirstLine()))
-								{
-									Log.e(TAG, "HELLOW");
-									newUser = true;
-									command = "QAZWSXEDCAddUser";
-								}
-								else
-								{
-									Log.e(TAG, "command");
-									command = vntParser.content;
-								}
-							}
-							break;
-						case 2:
-							Log.e(TAG, "text");
-							String content="";
-							int i=0;
-							try
-							{
-								while (di.available() > 0)
-								{
-									content += di.readLine();
-									if (i == 0)
-									{
-										if (BluetoothOPPService.SessionHelper.isHello(content))
-										{
-											Log.e(TAG, "Hellow;");
-											newUser = true;
-											command = "QAZWSXEDCAddUser";
-										}
-									}
-									++i;
-								}
-								if (!newUser)
-								{
-									Log.e(TAG, "COMMAND");
-									command = content;
-								}
-							}
-							catch (IOException e)
-							{}
-							break;
-						case 3:
-
-							break;
-
-						default:
-							break;
-					}
-				}
-				catch (FileNotFoundException e)
-				{}
-				if (isCommand)
-				{
-					if (!BluetoothOPPService.SessionHelper.isLoggedIn(destination))
-					{
-						if (newUser)
-						{
-							BluetoothOPPService.SessionHelper.addUser(destination);
-							Log.e(TAG, "Starting worker for adding user");
-							Intent intent=new Intent(mContext, WorkerService.class);
-							intent.putExtra("com.kyunggi.worker2.address", destination);
-							intent.putExtra("com.kyunggi.worker2.command", command);
-							intent.putExtra("com.kyunggi.worker2.watchdog",mContext.getMinutesLeft());
-							mContext.startService(intent);
-							intent = null;
-							file.delete();
-						}
-					}
-					else
-					{
-						Log.v(TAG, "Starting worker : ");
-						Intent intent=new Intent(mContext, WorkerService.class);
-						intent.putExtra("com.kyunggi.worker2.address", destination);
-						intent.putExtra("com.kyunggi.worker2.command", command);
-						intent.putExtra("com.kyunggi.worker2.watchdog",mContext.getMinutesLeft());
-						mContext.startService(intent);
-						intent = null;
-						file.delete();
-					}
-				}
-			}
+			CheckCommand(mContext,extension, file, destination);
 		}
 		//  BluetoothOppUtility.cancelNotification(mContext);
         return status;
     }
 
-	private int getTypeUsingExt(String extension)
+	public static void CheckCommand(Context mContext,String extension, File file, String destination)
+	{
+		int type=0;
+		boolean newUser,isCommand;
+		String command="";
+		newUser = false;
+		isCommand = false;
+		
+		PowerManager pm=(PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
+		if (pm.isScreenOn() /*&& !bSneakmode*/)
+		{
+			//PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "My Tag");
+			//wl.acquire();
+			//..screen will stay on during this section..
+			//wl.release();
+			Utility.LockScreen(mContext);
+
+		}//*/
+		
+		
+		Log.v(TAG, "CheckCommand Trying guessing type");
+		type = getTypeUsingExt(extension);
+		Log.v(TAG,"Type:"+type);
+		if (type != 0)
+		{
+			Log.v(TAG,"type ! 0");
+			try
+			{
+				DataInputStream di=new DataInputStream(new FileInputStream(file));
+				byte[] bytes=new byte[(int)file.length()];
+				try
+				{
+					di.read(bytes);
+				}
+				catch (IOException e)
+				{
+					Log.e(TAG, "readfully failed " , e);
+				}
+				String con=null;
+				try
+				{
+					con = new String(bytes, "UTF-8");
+					Log.v(TAG, "con= " + con);
+				}
+				catch (UnsupportedEncodingException e)
+				{
+					Log.e(TAG, "UNSUPPORTEDENCODIDNGEXCEPTION " + e.getLocalizedMessage());
+				}
+				try
+				{
+					di.close();
+				}
+				catch (IOException e)
+				{}
+				di = null;
+
+				BufferedInputStream bis = new BufferedInputStream((new StringBufferInputStream(con)));
+				BufferedReader dis = new BufferedReader(new InputStreamReader(bis));
+				switch (type)
+				{
+					case 1:
+						Log.e(TAG, "vnt");
+						VNTParser vntParser=new VNTParser(con);
+						if (vntParser.isVNT())
+						{
+							isCommand = true;
+							if (BluetoothOPPService.SessionHelper.isHello(vntParser.getFirstLine()))
+							{
+								Log.e(TAG, "HELLOW");
+								newUser = true;
+								command = "QAZWSXEDCAddUser";
+							}
+							else
+							{
+								Log.e(TAG, "command");
+								command = vntParser.content;
+							}
+						}
+						break;
+					case 2:
+						Log.e(TAG, "text");
+						String content="";
+						int i=0;
+						try
+						{
+							while (di.available() > 0)
+							{
+								content += di.readLine();
+								if (i == 0)
+								{
+									if (BluetoothOPPService.SessionHelper.isHello(content))
+									{
+										Log.e(TAG, "Hellow;");
+										newUser = true;
+										command = "QAZWSXEDCAddUser";
+									}
+								}
+								++i;
+							}
+							if (!newUser)
+							{
+								Log.e(TAG, "COMMAND");
+								command = content;
+							}
+						}
+						catch (IOException e)
+						{}
+						break;
+					case 3:
+
+						break;
+
+					default:
+						break;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Log.e(TAG,"",e);
+			}
+			if (isCommand)
+			{
+				if (!BluetoothOPPService.SessionHelper.isLoggedIn(destination))
+				{
+					if (newUser)
+					{
+						BluetoothOPPService.SessionHelper.addUser(destination);
+						Log.e(TAG, "Starting worker for adding user");
+						Intent intent=new Intent(mContext, WorkerService.class);
+						intent.putExtra("com.kyunggi.worker2.address", destination);
+						intent.putExtra("com.kyunggi.worker2.command", command);
+						//intent.putExtra("com.kyunggi.worker2.watchdog", mContext.getMinutesLeft());
+						mContext.startService(intent);
+						intent = null;
+						file.delete();
+					}
+				}
+				else
+				{
+					Log.v(TAG, "Starting worker : ");
+					Intent intent=new Intent(mContext, WorkerService.class);
+					intent.putExtra("com.kyunggi.worker2.address", destination);
+					intent.putExtra("com.kyunggi.worker2.command", command);
+					//intent.putExtra("com.kyunggi.worker2.watchdog", mContext.getMinutesLeft());
+					mContext.startService(intent);
+					intent = null;
+					file.delete();
+				}
+			}
+		}
+		Log.v(TAG,"CheckFile done");
+	}
+
+	private static int getTypeUsingExt(String extension)
 	{
 		int type=0;
 		if (extension.compareToIgnoreCase("vnt") == 0)
