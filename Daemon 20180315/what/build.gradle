@@ -1,0 +1,32 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.0"
+
+    defaultConfig {
+        applicationId "com.kyunggi.worker"
+        minSdkVersion 17
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+	compile 'com.google.android.gms:play-services-basement:+'
+	compile 'com.google.android.gms:play-services-base:+'
+	compile 'com.google.android.gms:play-services-auth:+'
+	compile 'com.google.android.gms:play-services-drive:+'
+	compile 'com.rmtheis:tess-two:8.0.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+	#compile 'com.google.android.gms:play-services:+'
+	#compile 'com.android.support:appcompat-v7:+'
+	#compile 'com.android.support:support-annotations:+'
+}

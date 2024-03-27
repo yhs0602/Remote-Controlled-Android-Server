@@ -1,0 +1,29 @@
+SRCDIR	= .
+
+CC		= gcc
+# DEBUGFLAG	= -g
+INCLUDE		= -I$(SRCDIR)
+# CFLAGS		= -O $(DEBUGFLAG) $(INCLUDE)
+CFLAGS		= $(DEBUGFLAG) $(INCLUDE)
+
+OBJS	=	IconvString.o \
+		UTF8token.o \
+		UCS2UTF8.o \
+		Hanja2Hangul.o
+
+install : $(OBJS) token hanja ucs2utf8
+
+token :
+	$(CC) $(CFLAGS) -o test-token.cgi $(OBJS) test-token.c
+	strip test-token.cgi
+
+hanja :
+	$(CC) $(CFLAGS) -o test-hj2hg.cgi $(OBJS) test-hj2hg.c
+	strip test-hj2hg.cgi
+
+ucs2utf8 :
+	$(CC) $(CFLAGS) -o test-ucs2utf8.cgi $(OBJS) test-ucs2utf8.c
+	strip test-ucs2utf8.cgi
+
+clean :
+	/bin/rm *.o
